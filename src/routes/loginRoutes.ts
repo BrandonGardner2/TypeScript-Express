@@ -1,7 +1,17 @@
-import Router, { Request, Response } from 'express';
+import Router, { Request, Response, NextFunction } from 'express';
 
 interface RequestWithBody extends Request {
   body: { [key: string]: string | undefined } 
+}
+
+function requireAuth (req: Request, res: Response, next: NextFunction): void {
+  if (req.session && req.session.loggedIn) {
+    next();
+    return;
+  } else {
+    res.status(403);
+    res.send('Not permitted.');
+  }
 }
 
 const router = Router();
@@ -12,6 +22,11 @@ router.get('/', (req: Request, res: Response) => {
   } else {
     res.redirect('/login');
   }
+});
+
+router.get('/logout', (req: Request, res: Response) => {
+  req.session = undefined;
+  res.redirect('/login');
 });
 
 router.get('/login', (req: Request, res: Response) => {
@@ -39,6 +54,10 @@ router.post('/login', (req: RequestWithBody, res: Response) => {
   } else {
     res.send('Invalid email or password.');
   }
+});
+
+router.get('/protected', requireAuth, (req: Request, res: Response) => {
+  res.send('Welcome to protected stuff.');
 });
 
 export { router };
