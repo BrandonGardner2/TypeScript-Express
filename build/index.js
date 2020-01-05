@@ -4,10 +4,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = __importDefault(require("express"));
+var LoginRoutes_1 = require("./routes/LoginRoutes");
+var body_parser_1 = __importDefault(require("body-parser"));
 var app = express_1.default();
-app.get('/', function (req, res) {
-    res.send("\n    <div>\n      <h1>Hi There</h1>\n    </div>\n  ");
-});
+app.use(body_parser_1.default.urlencoded({ extended: true }));
+app.use(LoginRoutes_1.router);
 app.listen(3000, function () {
     console.log('Listening on port 3000...');
 });
